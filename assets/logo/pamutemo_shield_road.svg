@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M128 16
+       C80 16 40 40 40 96
+       C40 176 80 232 128 256
+       C176 232 216 176 216 96
+       C216 40 176 16 128 16
+       Z"
+    stroke="#0F3B2E"
+    stroke-width="12"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <line
+    x1="128" y1="64"
+    x2="128" y2="208"
+    stroke="#0F3B2E"
+    stroke-width="10"
+    stroke-linecap="round"
+  />
+  <line
+    x1="128" y1="84"
+    x2="128" y2="188"
+    stroke="#0F3B2E"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-dasharray="10 12"
+  />
+</svg>
