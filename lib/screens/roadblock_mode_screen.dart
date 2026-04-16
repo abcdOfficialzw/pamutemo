@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,6 +26,14 @@ class RoadblockModeScreen extends StatelessWidget {
   final Fine fine;
 
   Future<void> _downloadScheduleOffline(BuildContext context) async {
+    if (kIsWeb) {
+      await _openWebSchedule(
+        context,
+        message: 'Opened the local PDF in your browser.',
+      );
+      return;
+    }
+
     try {
       final data = await rootBundle.load(_depositFinesAssetPath);
       final directory = await getApplicationDocumentsDirectory();
@@ -50,11 +59,13 @@ class RoadblockModeScreen extends StatelessWidget {
         );
       }
     } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to download the schedule.')),
-        );
+      if (!context.mounted) {
+        return;
       }
+      await _openOfficialScheduleAsFallback(
+        context,
+        message: 'Offline copy unavailable. Opened the official PDF instead.',
+      );
     }
   }
 
@@ -63,6 +74,46 @@ class RoadblockModeScreen extends StatelessWidget {
       context,
       _depositFinesUri,
       errorMessage: 'Unable to open the online source.',
+    );
+  }
+
+  Future<void> _openWebSchedule(
+    BuildContext context, {
+    required String message,
+  }) async {
+    final success = await launchUrl(
+      Uri.base.resolve(_depositFinesFileName),
+      webOnlyWindowName: '_blank',
+    );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? message : 'Unable to download the schedule.'),
+      ),
+    );
+  }
+
+  Future<void> _openOfficialScheduleAsFallback(
+    BuildContext context, {
+    required String message,
+  }) async {
+    final success = await launchUrl(
+      _depositFinesUri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? message : 'Unable to download the schedule.'),
+      ),
     );
   }
 
