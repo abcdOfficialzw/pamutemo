@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../data/checklist_repository.dart';
 import '../data/fines_repository.dart';
@@ -21,6 +22,10 @@ class FinesScreen extends StatefulWidget {
 }
 
 class _FinesScreenState extends State<FinesScreen> {
+  static final Uri _depositFinesUri = Uri.parse(
+    'https://bigsky.co.zw/wp-content/uploads/Schedule-of-Deposit-Fines-Traffic-2024.pdf',
+  );
+
   final TextEditingController _searchController = TextEditingController();
   late Future<_ScreenData> _dataFuture;
   String _query = '';
@@ -109,6 +114,18 @@ class _FinesScreenState extends State<FinesScreen> {
     }).toList();
   }
 
+  Future<void> _openDepositFinesDocument() async {
+    final success = await launchUrl(
+      _depositFinesUri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open the source document.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<_ScreenData>(
@@ -182,6 +199,37 @@ class _FinesScreenState extends State<FinesScreen> {
                     'Know the fine. Know your rights.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: const Color(0xFF2C3630),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Disclaimer: Fine amounts are populated from the NATIONAL SCHEDULE OF DEPOSIT FINES [TRAFFIC OFFENCES ONLY] document.',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.muted),
+                        ),
+                        const SizedBox(height: 6),
+                        TextButton.icon(
+                          onPressed: _openDepositFinesDocument,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          icon: const Icon(Icons.open_in_new, size: 16),
+                          label: const Text('Open source document (PDF)'),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 18),
