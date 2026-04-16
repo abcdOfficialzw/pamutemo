@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pamutemo.takutitus.me/sitemap.xml
+Sitemap: https://pamutemo-app.takutitus.me/sitemap.xml
