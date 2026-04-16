@@ -171,6 +171,11 @@ button:focus-visible {
   background: transparent;
 }
 
+.btn-disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
 .section {
   padding: 56px 0;
 }
